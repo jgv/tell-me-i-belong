@@ -18,6 +18,8 @@ function Cam(camId) {
   this.el.id = 'cam';
   this.ctx = this.el.getContext('2d');
   document.body.appendChild(this.el);
+  console.log(this)
+  window.clearInterval(App.timer)
   return this;
 }
 
@@ -26,13 +28,10 @@ Cam.prototype = {
     var cam = document.getElementById(this.el.id);
     if (cam) {
       cam.classname = "fadeout"
-
       window.setTimeout(function(){
         cam.parentNode.removeChild(cam);
       }, 250);
     }
-  },
-  run: function(){
   },
   insert: function(){
     document.body.appendChild(this.el)
@@ -49,18 +48,36 @@ App = {
   'interval': null,
   'cam': null,
   'goodCams': "1 2 3 4 5 6 7 9 10 12 13 14 15 16 18 19 20 21 22 23 24 25 26 27 28 31 33 35 36 38 42 43 44 45 46 47 48 49 50 52 53 55 56 57 58 59 60 64 65 66 67 68 69 71 72 74 83 84 89 90 95 96 98 102 103 105 106 111 113 122 129 134 137 139 144 146 148 149 153 171 190 191 193 195 198 369 368 361 360 371 363 364 365 366 164 367 390 328 403 398 410 399 400 415 409 408 170 173 414 416 420 359 178 172 187 421 445 175 434 166 329 182 188 253 184 185 186 437 436 183 162 189 157 413 412 404 405 285 406 411 287 466 446 419 426 427 320 344 438 301 441 338 462 464 433 432 431 322 135 140 138 386 388 389 384 428 439 440 207 393 395 425 424 453 457 459 458 460 454 455 456 321 194 327 318 203 277 197 302 391 443 383 448 396 450 281 143 120 316 315 127 372 270 121 314 290 402 289 288 299 213 325 324 303 286 259 358 397 254 258 112 256 257 382 305 340 400".split(" "),
-  'randomCam': function(){
+  'loadCamera': function(){
+
+    console.log('loading new camera');
+
     var xhr = new XMLHttpRequest(),
-    id = App.goodCams[Math.floor(Math.random() * App.goodCams.length)];
+    id = App.goodCams[Math.floor(Math.random() * App.goodCams.length)], t;
 
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
-        console.log(xhr.response)
-        if (xhr.response === true) {
+        if (JSON.parse(xhr.response) === true) {
+          clearTimeout(t);
+
           if (App.cam) App.cam.destroy();
           App.cam = new Cam(id);
+          App.timer = window.setInterval(function(){
+            if (!App.cam) {
+              App.loadCamera();
+              return;
+            }
+            var image = new Image();
+            image.onload = function(){
+              App.cam.el.width = window.innerWidth;
+              App.cam.el.height = window.innerHeight;
+              App.cam.ctx.drawImage(image, App.cam.el.width / 2 - image.width, App.cam.el.height / 2 - image.height, image.width * 2, image.height * 2); // draw image
+            };
+            image.src = App.root + App.cam.id + ".jpg" + "?math=" + Date.now();
+          }, 500);
+
         } else {
-          setTimeout(App.randomCam(), 250);
+          t = setTimeout(App.loadCamera(), 250);
         }
 
       }
@@ -72,26 +89,18 @@ App = {
   'init': function(){
 
     this.loadPlayer(); // load soundcloud
+    this.loadCamera(); // load a camera
 
-    App.randomCam();
+    if (getComputedStyle(document.getElementById('play')).display != "none") {
+      App.mobileEvents();
+    }
 
     (function(){
       window.setInterval(function(){
-        App.randomCam();
-      }, 8000);
+        App.loadCamera();
+      }, 9500);
     })();
 
-    App.timer = window.setInterval(function(){
-      var image = new Image();
-      image.onload = function(){
-        App.cam.el.width = App.cam.el.width;
-
-        App.cam.el.width = window.innerWidth;
-        App.cam.el.height = window.innerHeight;
-        App.cam.ctx.drawImage(image, App.cam.el.width / 2 - image.width, App.cam.el.height / 2 - image.height, image.width * 2, image.height * 2); // draw image
-      };
-      image.src = App.root + App.cam.id + ".jpg" + "?math=" + Date.now();
-    }, 500);
   },
   'serialize': function(obj) {
     var str = [];
@@ -120,11 +129,23 @@ App = {
     };
 
     iframe.src = this.track + '&' + this.serialize(params);
-    iframe.style.display = 'none';
+
 
     document.body.appendChild(iframe);
 
   },
+  'mobileEvents': function(){
+
+    var trigger = document.getElementById('sc-trigger');
+    trigger.addEventListener('touchend', function(){
+      console.log('hey')
+      var iframe = document.getElementById('sc')
+      var sc = SC.Widget(iframe);
+      sc.play()
+    }, false);
+  }
 };
 
-App.init();
+window.onload = function(){
+  App.init();
+}

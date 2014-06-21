@@ -74,6 +74,7 @@ canvas {
   -ms-animation: fadein 250ms; /* Internet Explorer */
   -o-animation: fadein 250ms; /* Opera */
   animation: fadein 250ms;
+  display:block;
 }
 
 .fadeout {
@@ -84,6 +85,10 @@ canvas {
   animation: fadein 250ms;
 }
 
+#social { position: fixed; bottom: 10px; left: 10px }
+#share { position: fixed; bottom: 10px; right: 10px }
+#play { display: none; margin: 0 auto; margin-top: 50px;}
+#sc { display: none }
 /* animation */
 
 @keyframes fadein {
@@ -142,4 +147,13 @@ canvas {
 @-o-keyframes fadeout {
   from { opacity: 1; }
   to   { opacity: 0; }
+}
+
+/* Media queries */
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+
+  #play { display: block }
+  #sc { position: fixed; right: 10000000px; display: block}
+
 }
