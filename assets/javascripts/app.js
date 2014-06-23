@@ -16,8 +16,11 @@ function Cam(camId) {
   this.id = camId;
   this.el = canvas;
   this.el.id = 'cam';
+//  this.description = document.createElement('div');
+//  this.description.innerHTML = "<p>NYC Traffic Camera No. " + camId + "</p>";
   this.ctx = this.el.getContext('2d');
   document.body.appendChild(this.el);
+//  document.body.appendChild(this.description);
   console.log(this)
   window.clearInterval(App.timer)
   return this;
@@ -71,7 +74,19 @@ App = {
             image.onload = function(){
               App.cam.el.width = window.innerWidth;
               App.cam.el.height = window.innerHeight;
-              App.cam.ctx.drawImage(image, App.cam.el.width / 2 - image.width, App.cam.el.height / 2 - image.height, image.width * 2, image.height * 2); // draw image
+              if (App.isMobile) {
+                var w = 250
+                h = (w/4) * 3;
+                App.cam.ctx.drawImage(image, App.cam.el.width / 2 - w / 2, App.cam.el.height / 2 - h / 2, w, h);
+              } else {
+                App.cam.ctx.drawImage(image, App.cam.el.width / 2 - image.width, App.cam.el.height / 2 - image.height, image.width * 2, image.height * 2);
+              }
+
+              App.cam.font = "bold 20px Lucida Console, Monaco, monospace";
+              App.cam.ctx.fillStyle = "#ffffff";
+              var text = "Camera No. " + App.cam.id;
+              var textWidth = App.cam.ctx.measureText(text).width;
+              App.cam.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , image.height * 3);
             };
             image.src = App.root + App.cam.id + ".jpg" + "?math=" + Date.now();
           }, 500);
@@ -89,25 +104,26 @@ App = {
   'init': function(){
 
     this.loadPlayer(); // load soundcloud
-    this.loadCamera(); // load a camera
 
     if (getComputedStyle(document.getElementById('play')).display != "none") {
+      App.isMobile = 'true';
       App.mobileEvents();
-    }
+    } else {
+      this.loadCamera(); // load a camera
 
-    (function(){
-      window.setInterval(function(){
-        App.loadCamera();
-      }, 9500);
-    })();
+      (function(){
+        window.setInterval(function(){
+          App.loadCamera();
+        }, 9500);
+      })();
+    }
 
   },
   'serialize': function(obj) {
     var str = [];
-    for(var p in obj)
-      if (obj.hasOwnProperty(p)) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-      }
+    for(var p in obj) {
+      if (obj.hasOwnProperty(p)) str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    }
     return str.join("&");
   },
   'loadPlayer': function(){
@@ -125,24 +141,39 @@ App = {
       'show_artwork': false,
       'show_comments': false,
       'show_playcount': false,
-      'show_user': false,
+      'show_user': false
     };
 
     iframe.src = this.track + '&' + this.serialize(params);
-
 
     document.body.appendChild(iframe);
 
   },
   'mobileEvents': function(){
 
-    var trigger = document.getElementById('sc-trigger');
+    SC.initialize({
+      client_id: "10fa02e457132d5188ae6dd3ed8a5468"
+    });
+
+    var soundToPlay, trigger = document.getElementById('sc-trigger');
+
+    SC.stream("/tracks/117531055", { useHTML5Audio: true, preferFlash: false }, function(sound) {
+      soundToPlay = sound;
+      // fade in button here
+    });
+
     trigger.addEventListener('touchend', function(){
-      console.log('hey')
-      var iframe = document.getElementById('sc')
-      var sc = SC.Widget(iframe);
-      sc.play()
-    }, false);
+      soundToPlay.play();
+      document.getElementById('play').className += " fadeout";
+
+      App.loadCamera(); // load a camera
+
+      (function(){
+        window.setInterval(function(){
+          App.loadCamera();
+        }, 9500);
+      })();
+    });
   }
 };
 
