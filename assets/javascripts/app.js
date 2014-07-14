@@ -12,10 +12,10 @@ window.requestAnimFrame = (function(){
 var App = App || {};
 
 function Cam(camId) {
-  var canvas = document.createElement('canvas');
+  var canvas = document.getElementById('canvas');
   this.id = camId;
   this.el = canvas;
-  this.el.id = 'cam';
+  //this.el.id = 'cam';
 //  this.description = document.createElement('div');
 //  this.description.innerHTML = "<p>NYC Traffic Camera No. " + camId + "</p>";
   this.ctx = this.el.getContext('2d');
@@ -28,6 +28,7 @@ function Cam(camId) {
 
 Cam.prototype = {
   destroy: function(){
+    return;
     var cam = document.getElementById(this.el.id);
     if (cam) {
       cam.classname = "fadeout"
@@ -45,7 +46,7 @@ Cam.prototype = {
 
 App = {
   'root': 'http://207.251.86.238/cctv',
-  'track': 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/117531055',
+  'track': 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/155709900%3Fsecret_token%3Ds-ZyATf',
   'canvas': null,
   'ctx': null,
   'interval': null,
@@ -60,38 +61,39 @@ App = {
 
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
-        if (JSON.parse(xhr.response) === true) {
-          clearTimeout(t);
 
-          if (App.cam) App.cam.destroy();
-          App.cam = new Cam(id);
+        if (JSON.parse(xhr.response) === true) {
+
+          clearTimeout(t);
+          clearTimeout(App.timer);
+
+          console.log('hey')
+
           App.timer = window.setInterval(function(){
-            if (!App.cam) {
-              App.loadCamera();
-              return;
-            }
             var image = new Image();
             image.onload = function(){
-              App.cam.el.width = window.innerWidth;
-              App.cam.el.height = window.innerHeight;
+              App.canvas.width = App.canvas.width;
+              App.canvas.width = window.innerWidth;
+              App.canvas.height = window.innerHeight;
               if (App.isMobile) {
-                var w = 250
-                h = (w/4) * 3;
-                App.cam.ctx.drawImage(image, App.cam.el.width / 2 - w / 2, App.cam.el.height / 2 - h / 2, w, h);
+                var w = 250, h = (w / 4) * 3;
+                App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h);
               } else {
-                App.cam.ctx.drawImage(image, App.cam.el.width / 2 - image.width, App.cam.el.height / 2 - image.height, image.width * 2, image.height * 2);
+                var w = App.canvas.width * .7, h = (w / 4) * 3;
+                App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h);
               }
 
-              App.cam.font = "bold 20px Lucida Console, Monaco, monospace";
-              App.cam.ctx.fillStyle = "#ffffff";
-              var text = "Camera No. " + App.cam.id;
-              var textWidth = App.cam.ctx.measureText(text).width;
-              App.cam.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , image.height * 3);
+              App.ctx.font = "lighter 11px monospace";
+              App.ctx.fillStyle = "#ffffff";
+              var text = "Camera No. " + id;
+              var textWidth = App.ctx.measureText(text).width;
+              App.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , window.innerHeight - 10);
             };
-            image.src = App.root + App.cam.id + ".jpg" + "?math=" + Date.now();
+            image.src = App.root + id + ".jpg" + "?math=" + Date.now();
           }, 500);
 
         } else {
+
           t = setTimeout(App.loadCamera(), 250);
         }
 
@@ -155,16 +157,18 @@ App = {
       client_id: "10fa02e457132d5188ae6dd3ed8a5468"
     });
 
-    var soundToPlay, trigger = document.getElementById('sc-trigger');
+    var soundToPlay, trigger = document.getElementById('sc-trigger'), play = documenet.getElementById('play');
 
     SC.stream("/tracks/117531055", { useHTML5Audio: true, preferFlash: false }, function(sound) {
       soundToPlay = sound;
       // fade in button here
+
+      play.fadeout.className += " fadein";
     });
 
     trigger.addEventListener('touchend', function(){
       soundToPlay.play();
-      document.getElementById('play').className += " fadeout";
+      play.className += " fadeout";
 
       App.loadCamera(); // load a camera
 
@@ -178,5 +182,7 @@ App = {
 };
 
 window.onload = function(){
+  App.canvas = document.getElementById('canvas');
+  App.ctx = App.canvas.getContext('2d');
   App.init();
 }
