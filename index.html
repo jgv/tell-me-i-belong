@@ -14,38 +14,27 @@
 
     <script src="http://connect.soundcloud.com/sdk.js"></script>
 
-    <!--
+    <canvas id="canvas"></canvas> <!-- primary canvas -->
+
     <div id="social">
-
-      <iframe class="facebook" src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fjimestack&amp;width&amp;height=21&amp;colorscheme=light&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;send=false&amp;appId=576874092373872" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px; width: 83px;" allowtransparency="true"></iframe>
-      <iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" src="http://platform.twitter.com/widgets/follow_button.1403226798.html#_=1403304120503&amp;dnt=true&amp;id=twitter-widget-0&amp;lang=en&amp;screen_name=jimestack&amp;show_count=false&amp;show_screen_name=false&amp;size=m" class="twitter-follow-button twitter-follow-button" title="Twitter Follow Button" data-twttr-rendered="true" style="width: 60px; height: 20px;"></iframe>
+      <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fjimestack&color=orange_transparent&size=24" style="width: 24px; height: 24px;"></iframe>
+      <div style="display:inline-block; vertical-align:top">
+        <iframe class="facebook" src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftellmeibelong.com&width&layout=button&action=like&show_faces=true&share=true&height=80&appId=156418247900636a" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
+        <a href="https://twitter.com/share" class="twitter-share-button" data-via="jgv" data-count="none">Tweet</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </div>
     </div>
 
 
-    <div id="share">
-      <div class="fb-share-button" data-href="http://tellmeibelong.com" data-type="button"></div>
+    <div id="purchase">
+      <h2>BUY ALBUM</h2>
     </div>
-
-    -->
-
-    <canvas id="canvas"></canvas>
 
     <div id="play" class="mobile">
       <button id="sc-trigger">Play</button>
     </div>
 
     <script src="/assets/javascripts/app.js"></script>
-
-    <!--
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) return;
-       js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=156418247900636&version=v2.0";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));</script>
-    -->
   </body>
 
 </html>

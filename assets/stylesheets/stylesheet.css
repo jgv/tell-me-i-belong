@@ -45,6 +45,7 @@ header {
   left: 0;
   width: 100%;
   color: ivory;
+  z-index: 420;
 }
 
 #artist {
@@ -55,7 +56,7 @@ header {
   float: right;
 }
 
-h1 {
+h1, h2 {
   margin: 0;
   padding: 0
   transform: translate3d(0, 0, 0);
@@ -89,11 +90,14 @@ canvas {
   opacity: 0;
 }
 
-#social { position: fixed; bottom: 10px; left: 10px }
-#share { position: fixed; bottom: 10px; right: 10px }
+#social { position: fixed; bottom: 10px; left: 10px; }
+#purchase { position: fixed; bottom: 10px; right: 10px; color: white; }
 #play { display: none; }
 
+
 #sc { display: none }
+
+iframe.facebook { border:none; overflow:hidden; height:21px; width: 92px; vertical-align: top; }
 
 /* animation */
 

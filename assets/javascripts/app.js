@@ -11,39 +11,6 @@ window.requestAnimFrame = (function(){
 
 var App = App || {};
 
-function Cam(camId) {
-  var canvas = document.getElementById('canvas');
-  this.id = camId;
-  this.el = canvas;
-  //this.el.id = 'cam';
-//  this.description = document.createElement('div');
-//  this.description.innerHTML = "<p>NYC Traffic Camera No. " + camId + "</p>";
-  this.ctx = this.el.getContext('2d');
-  document.body.appendChild(this.el);
-//  document.body.appendChild(this.description);
-  console.log(this)
-  window.clearInterval(App.timer)
-  return this;
-}
-
-Cam.prototype = {
-  destroy: function(){
-    return;
-    var cam = document.getElementById(this.el.id);
-    if (cam) {
-      cam.classname = "fadeout"
-      window.setTimeout(function(){
-        cam.parentNode.removeChild(cam);
-      }, 250);
-    }
-  },
-  insert: function(){
-    document.body.appendChild(this.el)
-  },
-  inService: function(){
-  }
-};
-
 App = {
   'root': 'http://207.251.86.238/cctv',
   'track': 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/155709900%3Fsecret_token%3Ds-ZyATf',
@@ -67,8 +34,6 @@ App = {
           clearTimeout(t);
           clearTimeout(App.timer);
 
-          console.log('hey')
-
           App.timer = window.setInterval(function(){
             var image = new Image();
             image.onload = function(){
@@ -80,7 +45,9 @@ App = {
                 App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h);
               } else {
                 var w = App.canvas.width * .7, h = (w / 4) * 3;
-                App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h);
+                App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h); // middle
+                App.ctx.drawImage(image, (App.canvas.width / 2 - w / 2) - w, App.canvas.height / 2 - h / 2, w, h); // left
+                App.ctx.drawImage(image, (App.canvas.width / 2 - w / 2) + w, App.canvas.height / 2 - h / 2, w, h); // right
               }
 
               App.ctx.font = "lighter 11px monospace";
@@ -100,7 +67,6 @@ App = {
       }
     }
     xhr.open("GET", "http://s173418.gridserver.com/cams/cams.php?id=" + id, true);
-    xhr.responseType = "json";
     xhr.send();
   },
   'init': function(){
