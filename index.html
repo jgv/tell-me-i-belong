@@ -2,9 +2,14 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>CCTVNYC</title>
+    <title>TELL ME I BELONG</title>
     <link href="/assets/stylesheets/stylesheet.css" rel="stylesheet" media="all" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <!--[if lt IE 9]>
+        <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
   </head>
   <body>
@@ -12,28 +17,34 @@
       <h1><span id="artist">JIM-E STACK</span><span id="title">TELL ME I BELONG</span></h1>
     </header>
 
-    <script src="http://connect.soundcloud.com/sdk.js"></script>
-
     <canvas id="canvas"></canvas> <!-- primary canvas -->
 
     <div id="social">
-      <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fjimestack&color=orange_transparent&size=24" style="width: 24px; height: 24px;"></iframe>
       <div style="display:inline-block; vertical-align:top">
-        <iframe class="facebook" src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftellmeibelong.com&width&layout=button&action=like&show_faces=true&share=true&height=80&appId=156418247900636a" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
-        <a href="https://twitter.com/share" class="twitter-share-button" data-via="jgv" data-count="none">Tweet</a>
+
+        <iframe class="facebook" src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftellmeibelong.com&width&layout=button&action=like&show_faces=false&share=false&height=35&appId=156418247900636" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
+
+        <a href="https://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
       </div>
+
+      <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fjimestack&color=orange_transparent&size=24" style="width: 24px; height: 24px;"></iframe>
+
     </div>
 
 
     <div id="purchase">
-      <h2>BUY ALBUM</h2>
+      <h2>
+        <a href="https://itunes.apple.com/us/album/tell-me-i-belong/id882919595">BUY ALBUM</a>
+      </h2>
+      <a id="screenshot" target="_blank" href="#">SCREENSHOT</a>
     </div>
 
     <div id="play" class="mobile">
       <button id="sc-trigger">Play</button>
     </div>
 
+    <script src="//connect.soundcloud.com/sdk.js"></script>
     <script src="/assets/javascripts/app.js"></script>
   </body>
 

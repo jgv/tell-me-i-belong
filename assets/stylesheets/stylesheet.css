@@ -65,9 +65,9 @@ h1, h2 {
   font-size: 22px;
 }
 
-h1 span {
-  margin: 10px;
-}
+h1 span { margin: 10px; }
+
+a, a:visited { color: ivory; text-decoration: none; }
 
 canvas {
   -webkit-animation: fadein 250ms; /* Safari and Chrome */
@@ -90,14 +90,16 @@ canvas {
   opacity: 0;
 }
 
-#social { position: fixed; bottom: 10px; left: 10px; }
-#purchase { position: fixed; bottom: 10px; right: 10px; color: white; }
+#social { position: fixed; bottom: 5px; left: 10px; }
+#purchase { position: fixed; bottom: 10px; right: 10px; text-align: right; }
 #play { display: none; }
-
 
 #sc { display: none }
 
-iframe.facebook { border:none; overflow:hidden; height:21px; width: 92px; vertical-align: top; }
+iframe.facebook { border:none; overflow:hidden; height:21px; width: 50px; vertical-align: top; }
+
+::selection {background:#111;}
+::-moz-selection {background:#111;}
 
 /* animation */
 

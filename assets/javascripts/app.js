@@ -1,24 +1,14 @@
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame    ||
-    window.oRequestAnimationFrame      ||
-    window.msRequestAnimationFrame     ||
-    function(callback, element) {
-      callback();
-    };
-})();
-
 var App = App || {};
 
 App = {
   'root': 'http://207.251.86.238/cctv',
-  'track': 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/155709900%3Fsecret_token%3Ds-ZyATf',
+  'proxy': 'http://s173418.gridserver.com/cams/cams.php?id=',
+  'stream': {},
+  'playlist': null,
+  'trackPosition': 0,
   'canvas': null,
   'ctx': null,
-  'interval': null,
-  'cam': null,
-  'goodCams': "1 2 3 4 5 6 7 9 10 12 13 14 15 16 18 19 20 21 22 23 24 25 26 27 28 31 33 35 36 38 42 43 44 45 46 47 48 49 50 52 53 55 56 57 58 59 60 64 65 66 67 68 69 71 72 74 83 84 89 90 95 96 98 102 103 105 106 111 113 122 129 134 137 139 144 146 148 149 153 171 190 191 193 195 198 369 368 361 360 371 363 364 365 366 164 367 390 328 403 398 410 399 400 415 409 408 170 173 414 416 420 359 178 172 187 421 445 175 434 166 329 182 188 253 184 185 186 437 436 183 162 189 157 413 412 404 405 285 406 411 287 466 446 419 426 427 320 344 438 301 441 338 462 464 433 432 431 322 135 140 138 386 388 389 384 428 439 440 207 393 395 425 424 453 457 459 458 460 454 455 456 321 194 327 318 203 277 197 302 391 443 383 448 396 450 281 143 120 316 315 127 372 270 121 314 290 402 289 288 299 213 325 324 303 286 259 358 397 254 258 112 256 257 382 305 340 400".split(" "),
+  'goodCams': "1 2 3 4 5 6 7 9 10 12 13 14 15 16 18 19 20 21 22 23 24 25 26 27 28 31 33 35 36 38 42 43 44 45 46 47 48 49 50 52 53 55 56 57 58 59 60 64 65 66 67 68 69 71 72 74 83 84 89 90 95 96 98 102 103 105 106 111 113 122 129 134 137 139 144 146 148 149 153 171 190 191 193 195 198 369 368 361 360 371 363 364 365 366 164 367 390 328 403 398 410 399 400 415 409 408 170 173 414 416 420 359 178 172 187 421 445 175 434 166 329 182 188 253 184 185 186 437 436 183 162 189 157 413 412 404 405 285 406 411 287 466 446 419 426 427 320 344 438 301 441 338 462 464 433 432 431 322 135 140 138 386 388 389 384 428 439 440 207 393 395 425 424 453 457 459 458 460 454 455 456 321 194 327 318 203 277 197 302 391 443 383 448 396 450 281 143 120 316 315 127 372 270 121 314 290 402 289 288 299 213 325 324 303 286 259 358 397 254 258 112 256 257 382 305 340 400".split(' '),
   'loadCamera': function(){
 
     console.log('loading new camera');
@@ -38,23 +28,34 @@ App = {
             var image = new Image();
             image.onload = function(){
               App.canvas.width = App.canvas.width;
+
               App.canvas.width = window.innerWidth;
               App.canvas.height = window.innerHeight;
               if (App.isMobile) {
                 var w = 250, h = (w / 4) * 3;
                 App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h);
               } else {
-                var w = App.canvas.width * .7, h = (w / 4) * 3;
+                var h = window.innerHeight, w = (h * 4) / 3;
+                //var w = App.canvas.width * .7, h = (w / 4) * 3;
                 App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h); // middle
                 App.ctx.drawImage(image, (App.canvas.width / 2 - w / 2) - w, App.canvas.height / 2 - h / 2, w, h); // left
                 App.ctx.drawImage(image, (App.canvas.width / 2 - w / 2) + w, App.canvas.height / 2 - h / 2, w, h); // right
+
+                document.getElementById('screenshot').setAttribute('href', image.src);
               }
 
               App.ctx.font = "lighter 11px monospace";
               App.ctx.fillStyle = "#ffffff";
+
               var text = "Camera No. " + id;
               var textWidth = App.ctx.measureText(text).width;
-              App.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , window.innerHeight - 10);
+              App.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , window.innerHeight - 20);
+
+              if (App.stream.position && App.stream.durationEstimate) {
+                var time = App.stream.position + "/" + App.stream.duration;
+                var timeWidth = App.ctx.measureText(time).width;
+                App.ctx.fillText(time, window.innerWidth / 2 - timeWidth / 2 , window.innerHeight - 10);
+              }
             };
             image.src = App.root + id + ".jpg" + "?math=" + Date.now();
           }, 500);
@@ -66,66 +67,66 @@ App = {
 
       }
     }
-    xhr.open("GET", "http://s173418.gridserver.com/cams/cams.php?id=" + id, true);
+    xhr.open("GET", App.proxy + id, true);
     xhr.send();
   },
   'init': function(){
 
-    this.loadPlayer(); // load soundcloud
+    SC.initialize({ client_id: "10fa02e457132d5188ae6dd3ed8a5468" });
 
-    if (getComputedStyle(document.getElementById('play')).display != "none") {
-      App.isMobile = 'true';
-      App.mobileEvents();
-    } else {
-      this.loadCamera(); // load a camera
+    SC.get('/resolve', { url: "https://soundcloud.com/innovativeleisure/sets/bbng-iii-preview", client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
+      if (!res.errors) App.playlist = res;
 
-      (function(){
-        window.setInterval(function(){
-          App.loadCamera();
-        }, 9500);
-      })();
-    }
+      if (getComputedStyle(document.getElementById('play')).display != "none") {
+        App.isMobile = 'true';
+        App.loadMobile();
+      } else {
+        App.loadDesktopPlayer();
+        App.loadCamera();
+
+        (function(){
+          window.setInterval(function(){
+            App.loadCamera();
+          }, 9500);
+        })();
+
+      }
+    });
 
   },
-  'serialize': function(obj) {
-    var str = [];
-    for(var p in obj) {
-      if (obj.hasOwnProperty(p)) str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    }
-    return str.join("&");
-  },
-  'loadPlayer': function(){
-    var iframe = document.createElement('iframe');
-    iframe.id = 'sc';
-    iframe.setAttribute('scrolling', 'no');
-    iframe.setAttribute('frameborder', 'no')
+  'loadDesktopPlayer': function(){
 
-    var params = {
-      'auto_play': true,
-      'buying': false,
-      'liking': true,
-      'download': false,
-      'sharing': false,
-      'show_artwork': false,
-      'show_comments': false,
-      'show_playcount': false,
-      'show_user': false
+    var next = function(){
+      App.trackPosition++;
+      if (!App.playlist.tracks[App.trackPosition]) App.trackPosition = 0;
+
+      console.log('playing' + App.playlist.tracks[App.trackPosition].title);
+      SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition].id, {
+        useHTML5Audio: true,
+        preferFlash: false,
+      }, function(sound) {
+        sound.play({
+          onfinish: next,
+        });
+        App.stream = sound;
+      });
     };
 
-    iframe.src = this.track + '&' + this.serialize(params);
-
-    document.body.appendChild(iframe);
-
-  },
-  'mobileEvents': function(){
-
-    SC.initialize({
-      client_id: "10fa02e457132d5188ae6dd3ed8a5468"
+    SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition].id, {
+      useHTML5Audio: true,
+      preferFlash: false,
+    }, function(sound) {
+      sound.play({
+        onfinish: next
+      });
+      App.stream = sound;
     });
+  },
+  'loadMobile': function(){
 
     var soundToPlay, trigger = document.getElementById('sc-trigger'), play = documenet.getElementById('play');
 
-    SC.stream("/tracks/117531055", { useHTML5Audio: true, preferFlash: false }, function(sound) {
+    SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition], { useHTML5Audio: true, preferFlash: false }, function(sound) {
       soundToPlay = sound;
       // fade in button here
 
