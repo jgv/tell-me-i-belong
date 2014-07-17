@@ -21,6 +21,7 @@ App = {
 
         if (JSON.parse(xhr.response) === true) {
 
+          clearTimeout(App.loadingTimer);
           clearTimeout(t);
           clearTimeout(App.timer);
 
@@ -32,30 +33,29 @@ App = {
               App.canvas.width = window.innerWidth;
               App.canvas.height = window.innerHeight;
               if (App.isMobile) {
-                var w = 250, h = (w / 4) * 3;
-                App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h);
+                var w = App.canvas.width, h = (w / 4) * 3;
+                App.ctx.drawImage(image, 0, App.canvas.height / 2 - h / 2, w, h);
               } else {
                 var h = window.innerHeight, w = (h * 4) / 3;
-                //var w = App.canvas.width * .7, h = (w / 4) * 3;
                 App.ctx.drawImage(image, App.canvas.width / 2 - w / 2, App.canvas.height / 2 - h / 2, w, h); // middle
                 App.ctx.drawImage(image, (App.canvas.width / 2 - w / 2) - w, App.canvas.height / 2 - h / 2, w, h); // left
                 App.ctx.drawImage(image, (App.canvas.width / 2 - w / 2) + w, App.canvas.height / 2 - h / 2, w, h); // right
 
                 document.getElementById('screenshot').setAttribute('href', image.src);
+
+                App.ctx.font = "lighter 11px monospace";
+                App.ctx.fillStyle = "#ffffff";
+
+                var text = "Camera No. " + id;
+                var textWidth = App.ctx.measureText(text).width;
+                App.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , window.innerHeight - 20);
+                var title = App.playlist.tracks[App.trackPosition].title;
+                var titleWidth = App.ctx.measureText(title).width;
+                App.ctx.fillText(title, window.innerWidth / 2 - titleWidth / 2 , window.innerHeight - 10);
+
               }
 
-              App.ctx.font = "lighter 11px monospace";
-              App.ctx.fillStyle = "#ffffff";
 
-              var text = "Camera No. " + id;
-              var textWidth = App.ctx.measureText(text).width;
-              App.ctx.fillText(text, window.innerWidth / 2 - textWidth / 2 , window.innerHeight - 20);
-
-              if (App.stream.position && App.stream.durationEstimate) {
-                var time = App.stream.position + "/" + App.stream.duration;
-                var timeWidth = App.ctx.measureText(time).width;
-                App.ctx.fillText(time, window.innerWidth / 2 - timeWidth / 2 , window.innerHeight - 10);
-              }
             };
             image.src = App.root + id + ".jpg" + "?math=" + Date.now();
           }, 500);
@@ -66,19 +66,38 @@ App = {
         }
 
       }
-    }
+    };
     xhr.open("GET", App.proxy + id, true);
     xhr.send();
   },
+  'loading': function(){
+
+    App.canvas.width = window.innerWidth;
+    App.canvas.height = window.innerHeight;
+
+    App.loadingTimer = window.setInterval(function(){
+    App.canvas.width = App.canvas.width;
+      App.ctx.font = "lighter 22px monospace";
+      App.ctx.fillStyle = "#ffffff";
+
+      var text = new Date();
+      var w = App.ctx.measureText(text).width;
+      var h = App.ctx.measureText(text).height;
+
+      App.ctx.fillText(text, window.innerWidth / 2 - w / 2 , window.innerHeight / 2 - 10);
+    }, 500);
+
+  },
   'init': function(){
+
+    getComputedStyle(document.getElementById('play')).display != "none" ? App.isMobile = true : this.loading();
 
     SC.initialize({ client_id: "10fa02e457132d5188ae6dd3ed8a5468" });
 
     SC.get('/resolve', { url: "https://soundcloud.com/innovativeleisure/sets/bbng-iii-preview", client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
       if (!res.errors) App.playlist = res;
 
-      if (getComputedStyle(document.getElementById('play')).display != "none") {
-        App.isMobile = 'true';
+      if (App.isMobile) {
         App.loadMobile();
       } else {
         App.loadDesktopPlayer();
@@ -103,10 +122,10 @@ App = {
       console.log('playing' + App.playlist.tracks[App.trackPosition].title);
       SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition].id, {
         useHTML5Audio: true,
-        preferFlash: false,
+        preferFlash: false
       }, function(sound) {
         sound.play({
-          onfinish: next,
+          onfinish: next
         });
         App.stream = sound;
       });
@@ -114,7 +133,7 @@ App = {
 
     SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition].id, {
       useHTML5Audio: true,
-      preferFlash: false,
+      preferFlash: false
     }, function(sound) {
       sound.play({
         onfinish: next
@@ -124,16 +143,17 @@ App = {
   },
   'loadMobile': function(){
 
-    var soundToPlay, trigger = document.getElementById('sc-trigger'), play = documenet.getElementById('play');
+    var soundToPlay, trigger = document.getElementById('sc-trigger'), play = document.getElementById('play');
 
-    SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition], { useHTML5Audio: true, preferFlash: false }, function(sound) {
+    // for mobile need to stream track, not playlist
+    SC.stream('/tracks/' + "117531055", { useHTML5Audio: true, preferFlash: false }, function(sound) {
       soundToPlay = sound;
-      // fade in button here
-
-      play.fadeout.className += " fadein";
     });
 
     trigger.addEventListener('touchend', function(){
+
+      console.log('clicked trigger')
+
       soundToPlay.play();
       play.className += " fadeout";
 
@@ -152,4 +172,4 @@ window.onload = function(){
   App.canvas = document.getElementById('canvas');
   App.ctx = App.canvas.getContext('2d');
   App.init();
-}
+};

@@ -176,6 +176,22 @@ iframe.facebook { border:none; overflow:hidden; height:21px; width: 50px; vertic
     top: 0;
     left: 0;
   }
+
+  #play button {
+    display: block;
+    margin: 70% auto 0 auto;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: white;
+    font-family: 'berthold_akzidenz_groteskBdCn', sans-serif;
+/*  -webkit-font-smoothing: antialiased;*/
+    text-rendering: optimizeLegibility;
+    font-size:50px;
+    border: thin solid white;
+
+  }
+
   #sc { position: fixed; right: 10000000px; display: block}
 
 }
