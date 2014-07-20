@@ -94,11 +94,14 @@ App = {
 
     SC.initialize({ client_id: "10fa02e457132d5188ae6dd3ed8a5468" });
 
-    SC.get('/resolve', { url: "https://soundcloud.com/innovativeleisure/sets/bbng-iii-preview", client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
+    var uri;
+    App.isMobile ? uri = "http://soundcloud.com/user85824445/lvrsmpiqasbt" : uri = "https://soundcloud.com/innovativeleisure/sets/bbng-iii-preview"
+
+    SC.get('/resolve', { url: uri, client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
       if (!res.errors) App.playlist = res;
 
       if (App.isMobile) {
-        App.loadMobile();
+        App.loadMobile(res.id);
       } else {
         App.loadDesktopPlayer();
         App.loadCamera();
@@ -141,12 +144,12 @@ App = {
       App.stream = sound;
     });
   },
-  'loadMobile': function(){
+  'loadMobile': function(id){
 
     var soundToPlay, trigger = document.getElementById('sc-trigger'), play = document.getElementById('play');
 
     // for mobile need to stream track, not playlist
-    SC.stream('/tracks/' + "117531055", { useHTML5Audio: true, preferFlash: false }, function(sound) {
+    SC.stream('/tracks/' + id, { useHTML5Audio: true, preferFlash: false }, function(sound) {
       soundToPlay = sound;
     });
 
