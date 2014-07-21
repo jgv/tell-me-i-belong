@@ -95,7 +95,7 @@ App = {
     SC.initialize({ client_id: "10fa02e457132d5188ae6dd3ed8a5468" });
 
     var uri;
-    App.isMobile ? uri = "http://soundcloud.com/user85824445/lvrsmpiqasbt" : uri = "https://soundcloud.com/innovativeleisure/sets/bbng-iii-preview"
+    App.isMobile ? uri = "http://soundcloud.com/user85824445/lvrsmpiqasbt" : uri = "https://soundcloud.com/jimestack/sets/tell-me-i-belong/s-bDFq4";
 
     SC.get('/resolve', { url: uri, client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
       if (!res.errors) App.playlist = res;
