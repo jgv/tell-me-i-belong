@@ -70,6 +70,11 @@ App = {
     xhr.open("GET", App.proxy + id, true);
     xhr.send();
   },
+  'tweaker': function(){
+    App.canvas.width = window.innerWidth;
+    App.canvas.height = window.innerHeight
+    console.log('tweakin');
+  },
   'loading': function(){
 
     App.canvas.width = window.innerWidth;
@@ -95,7 +100,7 @@ App = {
     SC.initialize({ client_id: "10fa02e457132d5188ae6dd3ed8a5468" });
 
     var uri;
-    App.isMobile ? uri = "http://soundcloud.com/user85824445/lvrsmpiqasbt" : uri = "https://soundcloud.com/jimestack/sets/tell-me-i-belong/s-bDFq4";
+    App.isMobile ? uri = "https://soundcloud.com/user85824445/8tkoowbpxfxm" : uri = "https://soundcloud.com/jimestack/sets/tell-me-i-belong/s-bDFq4";
 
     SC.get('/resolve', { url: uri, client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
       if (!res.errors) App.playlist = res;
@@ -114,6 +119,9 @@ App = {
 
       }
     });
+
+    window.addEventListener('orientationchange', App.tweaker);
+    window.addEventListener('resize', App.tweaker);
 
   },
   'loadDesktopPlayer': function(){
