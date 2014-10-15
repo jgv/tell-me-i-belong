@@ -7,10 +7,9 @@ App = {
   'trackPosition': 0,
   'canvas': null,
   'ctx': null,
+  'scuid': "10fa02e457132d5188ae6dd3ed8a5468",
   'goodCams': "1 2 3 4 5 6 7 9 10 12 13 14 15 16 18 19 20 22 25 27 28 31 33 35 36 38 42 43 44 48 49 50 53 55 56 57 58 64 65 66 67 68 69 71 72 74 83 84 90 96 98 102 103 106 111 122 134 144 146 148 149 171 191 193 198 369 368 361 360 371 363 364 365 366 367 390 328 403 398 410 399 400 409 408 170 414 416 420 359 178 172 187 421 445 434 166 329 188 185 186 437 436 183 162 189 157 413 412 404 405 285 406 411 287 466 446 419 426 427 320 344 438 441 338 462 464 433 432 431 322 138 386 388 389 384 428 439 440 393 395 425 424 453 457 458 460 454 455 321 194 327 318 203 277 302 391 443 383 448 396 450 281 143 120 316 315 127 372 314 290 402 289 299 213 324 303 286 259 358 397 254 258 382 305 340 400".split(' '),
   'loadCamera': function(){
-
-    //console.log('loading new camera');
 
     var xhr = new XMLHttpRequest(),
     id = App.goodCams[Math.floor(Math.random() * App.goodCams.length)], t;
@@ -50,14 +49,12 @@ App = {
 
       };
       image.src = App.root + id + ".jpg" + "?math=" + Date.now();
-
     }, 500);
 
   },
   'tweaker': function(){
     App.canvas.width = window.innerWidth;
     App.canvas.height = window.innerHeight
-    console.log('tweakin');
   },
   'loading': function(){
 
@@ -81,12 +78,13 @@ App = {
 
     getComputedStyle(document.getElementById('play')).display != "none" ? App.isMobile = true : this.loading();
 
-    SC.initialize({ client_id: "10fa02e457132d5188ae6dd3ed8a5468" });
+    SC.initialize({ client_id: App.scuid });
 
     var uri;
-    App.isMobile ? uri = "https://soundcloud.com/user85824445/8tkoowbpxfxm" : uri = "https://soundcloud.com/jimestack/sets/tell-me-i-belong";
+    App.isMobile ? uri = "https://api.soundcloud.com/tracks/159795559.json" : uri = "https://api.soundcloud.com/playlists/44454502.json"
 
-    SC.get('/resolve', { url: uri, client_id: "10fa02e457132d5188ae6dd3ed8a5468" }, function(res){
+
+    SC.get(uri, { client_id: App.scuid }, function(res){
       if (!res.errors) App.playlist = res;
 
       if (App.isMobile) {
@@ -103,6 +101,7 @@ App = {
 
       }
     });
+
 
   },
   'loadDesktopPlayer': function(){
@@ -122,15 +121,20 @@ App = {
       });
     };
 
-    SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition].id, {
-      useHTML5Audio: true,
-      preferFlash: false
-    }, function(sound) {
-      sound.play({
-        onfinish: next
+    SC.whenStreamingReady(function(){
+      SC.stream('/tracks/' + App.playlist.tracks[App.trackPosition].id, {
+        useHTML5Audio: true,
+        preferFlash: false,
+        autoplay: true
+      }, function(sound) {
+        console.log(sound)
+        sound.play({
+          onfinish: next
+        });
+        App.stream = sound;
       });
-      App.stream = sound;
     });
+
   },
   'loadMobile': function(id){
 
