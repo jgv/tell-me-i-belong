@@ -88,8 +88,6 @@ App = {
 
     SC.get(uri, { client_id: App.scuid }, function(res){
 
-      console.log(res);
-
       if (!res.errors) App.playlist = res;
 
       if (App.isMobile) {
