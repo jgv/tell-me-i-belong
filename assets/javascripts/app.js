@@ -81,10 +81,15 @@ App = {
     SC.initialize({ client_id: App.scuid });
 
     var uri;
-    App.isMobile ? uri = "https://api.soundcloud.com/tracks/159795559.json" : uri = "https://api.soundcloud.com/playlists/44454502.json"
+
+
+    App.isMobile ? uri = "https://api.soundcloud.com/tracks/159795559.json" : uri = "https://api.soundcloud.com/playlists/70226307.json"
 
 
     SC.get(uri, { client_id: App.scuid }, function(res){
+
+      console.log(res);
+
       if (!res.errors) App.playlist = res;
 
       if (App.isMobile) {
